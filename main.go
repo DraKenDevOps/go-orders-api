@@ -1,51 +1,18 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"net/http"
-	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/drakendevops/orders-api/application"
 )
 
 func main() {
-	router := chi.NewRouter()
+	app := application.New()
 
-	router.Use(middleware.Logger)
-	router.Get("/", health)
-	router.Get("/ping", basicHandler)
+	err := app.Start(context.TODO())
 
-	server := &http.Server{
-		Addr:    "0.0.0.0:8000",
-		Handler: router,
+	if err != nil {
+		return fmt.Errorf("HTTP server is error: %w", err)
 	}
-
-	error := server.ListenAndServe()
-
-	if error != nil {
-		fmt.Printf("Hello Microservice Moon 🚀")
-	} else {
-		fmt.Print(error)
-	}
-}
-
-var startTime time.Time
-
-func uptime() time.Duration {
-	return time.Since(startTime)
-}
-
-func init() {
-	startTime = time.Now()
-}
-
-func health(res http.ResponseWriter, req *http.Request) {
-	// fmt.Println(uptime())
-	res.Write([]byte("Microservice to Moon 🚀"))
-}
-
-func basicHandler(res http.ResponseWriter, req *http.Request) {
-	// fmt.Print(req)
-	res.Write([]byte("qwertyuiopasdfghjklxcvbnm 🚀"))
 }
